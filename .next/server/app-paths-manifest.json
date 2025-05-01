@@ -1,7 +1,6 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
+  "/(auth)/sign-up/page": "app/(auth)/sign-up/page.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/suggest-messages/route": "app/api/suggest-messages/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js"
+  "/api/check-username-unique/route": "app/api/check-username-unique/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js"
 }

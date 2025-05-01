@@ -1,48 +1,91 @@
 // app/signup/page.tsx
 "use client";
-import { fetchExternalImage } from "next/dist/server/image-optimizer";
-import { useState } from "react";
+// import { fetchExternalImage } from "next/dist/server/image-optimizer";
+import { useEffect, useState } from "react";
+// import { useDebounceCallback } from 'usehooks-ts'
+import { toast, Toaster } from "sonner";
+import axios from "axios";
+import { AxiosError } from "axios";
+import { Loader2, UserMinus } from "lucide-react";
+import APiresponse from "@/app/types/ApiRespnse";
+// import { redirect } from "next/dist/server/api-utils";
+import { useRouter } from "next/navigation";
+import { TIMEOUT } from "dns";
 // import { saveuser } from '@/app/helpers/savenewuser';
 export default function SignupPage() {
-  const [formData, setFormData] = useState({
+  const router = useRouter();
+  // const [username , setusername] = useState('')
+  const [checkinguser, setcheckinguser] = useState(false);
+  const [issubmitting, setissubmitting] = useState(false);
+  const [usernamemessage, setusernamemessage] = useState("");
+  const [FormData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...FormData, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    const checkUser = async () => {
+      if (FormData.name) {
+        setcheckinguser(true);
+        setusernamemessage("");
+      }
+      try {
+        const usename = FormData.name;
+
+        const response = await axios.get(
+          `/api/check-username-unique?username=${usename}`
+        );
+        setusernamemessage(response.data.message);
+      } catch (error) {
+        const axioserror = error as AxiosError<APiresponse>;
+        console.log(axioserror);
+        setusernamemessage(
+          axioserror.response?.data.message ?? "Error in checking the username"
+        );
+      } finally {
+        setcheckinguser(false);
+      }
+    };
+    const timeout = setTimeout(() => {
+      checkUser();
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [FormData.name]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password != formData.confirmPassword) {
+    if (FormData.password != FormData.confirmPassword) {
       console.log("enter valid password");
       return;
     }
     try {
-      console.log("heyjfsbjbib")
       const data = await fetch("/api/sign-up", {
         method: "POST",
         headers: { "content-Type": "application/json" },
         body: JSON.stringify({
-          username: formData.name,
-          email: formData.email,
-          password: formData.password,
+          username: username,
+          email: FormData.email,
+          password: FormData.password,
         }),
       });
-      const user =await data.json();
+      const user = await data.json();
       if (user.ok) {
-        console.log("new user saved successfully",user.user);
-        
+        console.log("new user saved successfully", user);
+        router.push(`/verify`);
       } else {
-        console.log("Error in saving the user",user.error);
+        console.log("Error in saving the user", user.error);
         alert(user.error);
       }
     } catch (err: any) {
       throw new Error("Internal server error:", err);
     }
-    console.log("Signup form submitted:", formData);
+    console.log("Signup form submitted:", FormData);
   };
 
   return (
@@ -56,34 +99,51 @@ export default function SignupPage() {
             type="text"
             name="name"
             placeholder="Name"
-            value={formData.name}
+            value={FormData.name}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg text-black  placeholder:text-black bg-gray-200"
             required
           />
+          {checkinguser && <Loader2 className="animate-spin" />}
+          {!checkinguser && usernamemessage && (
+            <p
+              className={`mt-[-10px] ml-2 text-sm ${
+                usernamemessage === "username is unique"
+                  ? "text-green-500"
+                  : "text-red-500"
+              }`}
+            >
+              {usernamemessage}
+            </p>
+          )}
           <input
             type="email"
             name="email"
             placeholder="Email"
-            value={formData.email}
+            value={FormData.email}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg  placeholder:text-black bg-gray-200 text-black"
             required
           />
+          <p className="text-sm text-green-500 mt-[-10px] ml-2">
+            we are going to send a verification email
+          </p>
+
           <input
             type="password"
             name="password"
             placeholder="Password"
-            value={formData.password}
+            value={FormData.password}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg  placeholder:text-black bg-gray-200 text-black"
             required
           />
+
           <input
             type="password"
             name="confirmPassword"
             placeholder="Confirm Password"
-            value={formData.confirmPassword}
+            value={FormData.confirmPassword}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg placeholder:text-black bg-gray-200 text-black"
             required

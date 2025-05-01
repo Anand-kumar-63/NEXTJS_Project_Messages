@@ -3,7 +3,7 @@
   import "./globals.css";
   import Header from "@/components/Header";
   import Footer from "@/components/footer/Footer";
-
+  import { Toaster } from "@/components/ui/sonner"
   // const geistSans = Geist({
   //   variable: "--font-geist-sans",
   //   subsets: ["latin"],
@@ -29,6 +29,7 @@
         <body className="antialiased">
           <Header />
           {children}
+          <Toaster />
           <Footer />
         </body>
       </html>

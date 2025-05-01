@@ -170,3 +170,14 @@ You can now add custom logic: validation, sending data to the backend, etc.
 console.log(...) just prints the collected formData to the console (for now).
 # using Gemini api 
 http://dev.to/shubhamtiwari909/gemini-ai-next-js-15-tailwind-1247
+
+# Use form [shadcn]
+## debouncing {we did debouncing in our project using settimetou and cleartimeout}
+useDebouncedCallback from usehooks-ts is a custom React hook that lets you delay the execution of a function until a certain amount of time has passed since it was last called — commonly known as debouncing.
+This is useful in situations like:
+
+Typing in a search box (to avoid firing API calls on every keystroke).
+Resizing the window (to prevent flooding with events).
+Preventing rapid clicks on a button.
+
+

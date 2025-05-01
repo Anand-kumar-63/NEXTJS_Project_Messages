@@ -13,17 +13,21 @@ export async function GET(request:Request){
     const queryparams = {
         username:searchParams.get('username')
     } 
+    console.log(queryparams);
+
     const result = usernamequesrySchema.safeParse(queryparams);
-    console.log(result);
+    // console.log(result);
+
     if(!result.success){
       const usernameerrors = result.error?.format().username?._errors || []
-      console.log(usernameerrors)
+      console.log(usernameerrors);
       return Response.json({
            success:false,
-           message:"Error in checking the username",
+           message:usernameerrors.join(' & ') || usernameerrors,
       })
     }
-    const username = result.data;
+
+    const {username} = result.data;
     const Isuser = await UserModel.findOne({username});
     if(Isuser){
        return Response.json({

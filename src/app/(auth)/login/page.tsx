@@ -14,7 +14,6 @@ const page = () => {
   };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     const result = signIn("credentials", {
       email: FormData.email,
       password: FormData.password,
